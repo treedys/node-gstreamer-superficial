@@ -40,6 +40,7 @@ class Pipeline : public Nan::ObjectWrap {
 		static void _polledBus( uv_work_t *req, int );
 		static NAN_METHOD(PollBus);
 		
+		static NAN_GETTER(GetState);
 		static NAN_GETTER(GetAutoFlushBus);
 		static NAN_SETTER(SetAutoFlushBus);
 		static NAN_GETTER(GetDelay);

@@ -44,6 +44,7 @@ void Pipeline::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE exports) {
 	Nan::SetPrototypeMethod(ctor, "findChild", FindChild);
 	Nan::SetPrototypeMethod(ctor, "pollBus", PollBus);
 			
+	Nan::SetAccessor(proto, Nan::New("state").ToLocalChecked(), GetState);
 	Nan::SetAccessor(proto, Nan::New("auto-flush-bus").ToLocalChecked(), GetAutoFlushBus, SetAutoFlushBus);
 	Nan::SetAccessor(proto, Nan::New("delay").ToLocalChecked(), GetDelay, SetDelay);
 	Nan::SetAccessor(proto, Nan::New("latency").ToLocalChecked(), GetLatency, SetLatency);
@@ -193,6 +194,23 @@ NAN_METHOD(Pipeline::PollBus) {
 	uv_queue_work(uv_default_loop(), &br->request, _doPollBus, _polledBus);
 
 	scope.Escape(Nan::Undefined());
+}
+
+
+NAN_GETTER(Pipeline::GetState) {
+	Pipeline *obj = Nan::ObjectWrap::Unwrap<Pipeline>(info.This());
+
+	const char * state;
+
+	switch(GST_STATE(obj->pipeline)) {
+		case GST_STATE_NULL:    state = "NULL";    break;
+		case GST_STATE_READY:   state = "READY";   break;
+		case GST_STATE_PAUSED:  state = "PAUSED";  break;
+		case GST_STATE_PLAYING: state = "PLAYING"; break;
+		default:                state = "UNKNOWN"; break;
+	}
+
+	info.GetReturnValue().Set(Nan::New(state).ToLocalChecked());
 }
 
 
