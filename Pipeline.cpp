@@ -169,8 +169,17 @@ void Pipeline::_polledBus(uv_work_t *req, int n) {
 		
 		gst_message_unref(br->msg);
 	}
-	if(GST_STATE(br->obj->pipeline) != GST_STATE_NULL)
+	if(GST_STATE(br->obj->pipeline) != GST_STATE_NULL) {
 		uv_queue_work(uv_default_loop(), &br->request, _doPollBus, _polledBus);
+	} else {
+		Nan::HandleScope scope;
+		Local<Object> m = Nan::New<Object>();
+		m->Set(Nan::New("type").ToLocalChecked(), Nan::New("stopped").ToLocalChecked());
+	
+		Local<Value> argv[1] = { m };
+		Local<Function> cbCallbackLocal = Nan::New(br->callback);
+		cbCallbackLocal->Call(Nan::GetCurrentContext()->Global(), 1, argv);
+	}
 }
 
 NAN_METHOD(Pipeline::PollBus) {
