@@ -10,9 +10,9 @@ class Pipeline : public Nan::ObjectWrap {
 	public:
 		static void Init( Handle<Object> exports );
 		
-		void play();
-		void pause();
-		void stop();
+		GstStateChangeReturn play();
+		GstStateChangeReturn pause();
+		GstStateChangeReturn stop();
 		void sendEOS();
 		void forceKeyUnit(GObject* sink, int cnt);
 		

@@ -64,22 +64,44 @@ NAN_METHOD(Pipeline::New) {
 	info.GetReturnValue().Set(info.This());
 }
 
-void Pipeline::play() {
-	gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
+GstStateChangeReturn Pipeline::play() {
+	return gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
 }
 
 NAN_METHOD(Pipeline::Play) {
 	Pipeline* obj = Nan::ObjectWrap::Unwrap<Pipeline>(info.This());
-	obj->play();
+
+	const char * state_change_return;
+
+	switch(obj->play()) {
+		case GST_STATE_CHANGE_FAILURE:    state_change_return = "FAILURE";    break;
+		case GST_STATE_CHANGE_SUCCESS:    state_change_return = "SUCCESS";    break;
+		case GST_STATE_CHANGE_ASYNC:      state_change_return = "ASYNC";      break;
+		case GST_STATE_CHANGE_NO_PREROLL: state_change_return = "NO_PREROLL"; break;
+		default:                          state_change_return = "UNKNOWN";    break;
+	}
+
+	info.GetReturnValue().Set(Nan::New(state_change_return).ToLocalChecked());
 }
 
-void Pipeline::stop() {
-	gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_NULL);
+GstStateChangeReturn Pipeline::stop() {
+	return gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_NULL);
 }
 
 NAN_METHOD(Pipeline::Stop) {
 	Pipeline* obj = Nan::ObjectWrap::Unwrap<Pipeline>(info.This());
-	obj->stop();
+
+	const char * state_change_return;
+
+	switch(obj->stop()) {
+		case GST_STATE_CHANGE_FAILURE:    state_change_return = "FAILURE";    break;
+		case GST_STATE_CHANGE_SUCCESS:    state_change_return = "SUCCESS";    break;
+		case GST_STATE_CHANGE_ASYNC:      state_change_return = "ASYNC";      break;
+		case GST_STATE_CHANGE_NO_PREROLL: state_change_return = "NO_PREROLL"; break;
+		default:                          state_change_return = "UNKNOWN";    break;
+	}
+
+	info.GetReturnValue().Set(Nan::New(state_change_return).ToLocalChecked());
 }
 
 void Pipeline::sendEOS() {
@@ -91,13 +113,24 @@ NAN_METHOD(Pipeline::SendEOS) {
 	obj->sendEOS();
 }
 
-void Pipeline::pause() {
-	gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PAUSED);
+GstStateChangeReturn Pipeline::pause() {
+	return gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PAUSED);
 }
 
 NAN_METHOD(Pipeline::Pause) {
 	Pipeline* obj = Nan::ObjectWrap::Unwrap<Pipeline>(info.This());
-	obj->pause();
+
+	const char * state_change_return;
+
+	switch(obj->pause()) {
+		case GST_STATE_CHANGE_FAILURE:    state_change_return = "FAILURE";    break;
+		case GST_STATE_CHANGE_SUCCESS:    state_change_return = "SUCCESS";    break;
+		case GST_STATE_CHANGE_ASYNC:      state_change_return = "ASYNC";      break;
+		case GST_STATE_CHANGE_NO_PREROLL: state_change_return = "NO_PREROLL"; break;
+		default:                          state_change_return = "UNKNOWN";    break;
+	}
+
+	info.GetReturnValue().Set(Nan::New(state_change_return).ToLocalChecked());
 }
 
 void Pipeline::forceKeyUnit(GObject *sink, int cnt) {
