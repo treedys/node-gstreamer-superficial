@@ -179,7 +179,7 @@ void Pipeline::_doPollBus(uv_work_t *req) {
 void Pipeline::_polledBus(uv_work_t *req, int n) {
 	BusRequest *br = static_cast<BusRequest*>(req->data);
 
-	if(br->msg) {
+	if(br->msg && GST_MESSAGE_SRC(br->msg)==GST_OBJECT(br->obj->pipeline)) {
 		Nan::HandleScope scope;
 		Local<Object> m = Nan::New<Object>();
 		m->Set(Nan::New("type").ToLocalChecked(), Nan::New(GST_MESSAGE_TYPE_NAME(br->msg)).ToLocalChecked());
