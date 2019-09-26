@@ -39,6 +39,7 @@ void Pipeline::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE exports) {
 	Nan::SetPrototypeMethod(ctor, "play", Play);
 	Nan::SetPrototypeMethod(ctor, "pause", Pause);
 	Nan::SetPrototypeMethod(ctor, "stop", Stop);
+	Nan::SetPrototypeMethod(ctor, "abort", Abort);
 	Nan::SetPrototypeMethod(ctor, "sendEOS", SendEOS);
 	Nan::SetPrototypeMethod(ctor, "forceKeyUnit", ForceKeyUnit);
 	Nan::SetPrototypeMethod(ctor, "findChild", FindChild);
@@ -131,6 +132,15 @@ NAN_METHOD(Pipeline::Pause) {
 	}
 
 	info.GetReturnValue().Set(Nan::New(state_change_return).ToLocalChecked());
+}
+
+void Pipeline::abort() {
+	return gst_element_abort_state(GST_ELEMENT(pipeline));
+}
+
+NAN_METHOD(Pipeline::Abort) {
+	Pipeline* obj = Nan::ObjectWrap::Unwrap<Pipeline>(info.This());
+	obj->abort();
 }
 
 void Pipeline::forceKeyUnit(GObject *sink, int cnt) {
